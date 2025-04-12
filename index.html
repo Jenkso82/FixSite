@@ -631,9 +631,9 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
 
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
@@ -669,6 +669,7 @@
                 if (!user) {
                     window.location.href = 'auth.html';
                 } else {
+                    userData.uid = user.uid; // Сохраняем UID пользователя
                     const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
                     userData.verify = userDoc.empty ? false : userDoc.docs[0].data().verify || false;
                     loadPosts();
@@ -761,6 +762,7 @@
                 avatar: userData.avatar || defaultAvatar,
                 username: userData.username || 'User',
                 verify: userData.verify || false,
+                userId: userData.uid, // Добавляем userId для проверки прав
                 createdAt: new Date()
             };
 
