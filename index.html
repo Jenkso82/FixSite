@@ -3,48 +3,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game WebApp</title>
-    <script src="https://web.telegram.org/lib/telegram-web-app.js"></script>
+    <title>FixSite</title>
+    <script src="https://web.telegram.org/k/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-user-select:none;user-select:none;touch-action:none;}
-        html, body {height:100%;overflow:hidden;background:#f5f5f5;color:#1a1a1a;overscroll-behavior:none;-webkit-overflow-scrolling:none;}
-        .container {display:flex;flex-direction:column;min-height:100vh;width:100%;max-width:480px;margin:0 auto;padding:20px;background:linear-gradient(180deg,#ffffff,#f0f0f5);opacity:1;}
-        .nav-bar {width:100%;background:rgba(255,255,255,0.9);padding:12px;margin-bottom:24px;border-radius:16px;font-size:18px;font-weight:800;color:#333;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(0,0,0,0.1);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;position:relative;}
-        .nav-bar-title {display:flex;align-items:center;justify-content:center;gap:8px;flex-grow:1;text-align:center;}
-        .nav-bar img.plus-icon {position:absolute;right:12px;}
-        .navigation {position:fixed;bottom:0;left:0;width:100%;display:flex;justify-content:space-around;background:rgba(255,255,255,0.9);padding:12px 0;border-top:1px solid rgba(107,70,193,0.1);box-shadow:0 -4px 15px rgba(0,0,0,0.1);backdrop-filter:blur(10px);}
-        .nav-item {display:flex;flex-direction:column;align-items:center;color:#666;cursor:pointer;width:33.33%;padding:5px;}
-        .nav-item.disabled {cursor:not-allowed;opacity:0.5;}
-        .nav-item img {width:26px;height:26px;margin-bottom:4px;filter:brightness(0.3);}
-        .nav-text {font-size:12px;font-weight:500;}
-        .nav-item.active {color:#6b46c1;}
-        .nav-item.active img {filter:brightness(1) drop-shadow(0 0 4px #6b46c1);}
-        .fade-out {animation:fadeOut 0.3s ease forwards;}
-        @keyframes fadeOut {from{opacity:1;}to{opacity:0;}}
-        .tab-content {display:none;}
-        .tab-content.active {display:block;}
-        .search-container {position:relative;width:80%;margin:0 auto 20px;transform-origin:center;}
-        .search-input {width:100%;padding:12px 40px 12px 16px;border-radius:14px;border:1px solid #e0e0e0;background:linear-gradient(145deg,#ffffff,#f8f8fb);font-size:15px;color:#333;box-shadow:0 4px 12px rgba(0,0,0,0.08);outline:none;}
-        .search-input:focus {border-color:transparent;box-shadow:0 0 0 3px rgba(107,70,193,0.3), 0 6px 16px rgba(0,0,0,0.1);transform:scale(1.03);}
-        .search-icon {position:absolute;right:12px;top:50%;transform:translateY(-50%);width:20px;height:20px;filter:brightness(0.6);}
-        .search-input:focus + .search-icon {filter:brightness(1) drop-shadow(0 0 2px #6b46c1);}
-        .not-found-card {display:none;text-align:center;padding:24px;background:linear-gradient(145deg,#ffffff,#f0f0ff);border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,0.12);margin:20px auto;width:90%;opacity:0;transform:translateY(20px);animation:slideIn 0.4s ease forwards;}
-        .not-found-card.active {display:block;}
-        .not-found-card img {width:40px;height:40px;margin-bottom:12px;}
-        .not-found-card p {font-size:16px;font-weight:500;color:#444;}
-        @keyframes slideIn {from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-        .logout-button {position:absolute;left:12px;padding:8px;background:#e63946;color:white;border:none;border-radius:8px;cursor:pointer;}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        html, body {
+            height: 100%;
+            background: #f7f7f7;
+            color: #222;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px;
+            background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+            overflow-y: auto;
+        }
+        .nav-bar {
+            width: 100%;
+            background: #ffffff;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #222;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .nav-bar-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+        .nav-bar img.plus-icon {
+            position: absolute;
+            right: 16px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .nav-bar img.plus-icon:active {
+            transform: scale(0.9);
+        }
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-width: 480px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-around;
+            background: #ffffff;
+            padding: 10px 0;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            cursor: pointer;
+            width: 33.33%;
+            padding: 8px;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+        .nav-item.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            filter: brightness(0.5);
+            transition: filter 0.2s;
+        }
+        .nav-text {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .nav-item.active {
+            color: #007bff;
+        }
+        .nav-item.active img {
+            filter: brightness(1);
+        }
+        .fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            padding-bottom: 80px;
+        }
+        .tab-content.active {
+            display: flex;
+        }
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 20px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            background: #ffffff;
+            font-size: 15px;
+            color: #222;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            outline: none;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            user-select: auto;
+        }
+        .search-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+            transform: scale(1.02);
+        }
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            filter: brightness(0.6);
+            transition: filter 0.2s;
+        }
+        .search-input:focus + .search-icon {
+            filter: brightness(1);
+        }
+        .posts-container {
+            flex-grow: 1;
+            min-height: 100px;
+        }
+        .not-found-card {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            margin: 0 auto 20px;
+            width: 90%;
+            opacity: 0;
+            animation: slideIn 0.4s ease forwards;
+        }
+        .not-found-card.active {
+            display: block;
+            opacity: 1;
+        }
+        .not-found-card img {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 10px;
+        }
+        .not-found-card p {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tooltip {
+            display: none;
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 400;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        .nav-bar-title img:hover + .tooltip,
+        .tooltip.active {
+            display: block;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+            touch-action: none;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            touch-action: pan-y;
+        }
+        .modal-close {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .modal-close:hover {
+            transform: scale(1.1);
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #222;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+            user-select: auto;
+        }
+        .modal-input:focus {
+            border-color: #007bff;
+        }
+        .modal-textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            min-height: 100px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+            user-select: auto;
+        }
+        .modal-textarea:focus {
+            border-color: #007bff;
+        }
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .file-upload:hover {
+            border-color: #007bff;
+        }
+        .file-upload img {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+        }
+        .file-upload p {
+            font-size: 14px;
+            color: #666;
+        }
+        .file-upload.hidden {
+            display: none;
+        }
+        .preview-container {
+            margin-bottom: 16px;
+            position: relative;
+            width: 100%;
+        }
+        .preview-image {
+            width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        .remove-image {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .modal-button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .modal-button:hover {
+            background: #0056b3;
+        }
+        .modal-button:active {
+            transform: scale(0.98);
+        }
+        .post-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 12px;
+            padding: 12px;
+            animation: slideIn 0.4s ease;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .post-card:hover {
+            transform: translateY(-2px);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .post-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+            object-fit: cover;
+        }
+        .post-username {
+            font-size: 14px;
+            font-weight: 600;
+            color: #222;
+        }
+        .verify-icon {
+            width: 16px;
+            height: 16px;
+            margin-left: 4px;
+            cursor: pointer;
+        }
+        .verify-tooltip {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 400;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        .verify-icon:hover + .verify-tooltip,
+        .verify-tooltip.active {
+            display: block;
+        }
+        .post-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 4px;
+            user-select: text;
+        }
+        .post-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .post-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            flex-grow: 1;
+            user-select: text;
+        }
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-top: 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: #666;
+        }
+        .action-item img {
+            width: 18px;
+            height: 18px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 1200px;
+                padding: 24px;
+            }
+            .nav-bar {
+                padding: 16px 24px;
+                font-size: 20px;
+                border-radius: 12px;
+            }
+            .nav-bar img.plus-icon {
+                width: 28px;
+                height: 28px;
+            }
+            .navigation {
+                max-width: 1200px;
+                padding: 12px 0;
+                border-radius: 14px 14px 0 0;
+            }
+            .nav-item {
+                padding: 12px;
+            }
+            .nav-item img {
+                width: 28px;
+                height: 28px;
+            }
+            .nav-text {
+                font-size: 13px;
+            }
+            .search-container {
+                max-width: 400px;
+            }
+            .search-input {
+                font-size: 16px;
+                padding: 14px 44px 14px 20px;
+            }
+            .search-icon {
+                width: 22px;
+                height: 22px;
+            }
+            .not-found-card {
+                width: 70%;
+                padding: 24px;
+            }
+            .not-found-card img {
+                width: 40px;
+                height: 40px;
+            }
+            .not-found-card p {
+                font-size: 16px;
+            }
+            .modal-content {
+                max-width: 500px;
+                padding: 24px;
+            }
+            .modal-title {
+                font-size: 20px;
+            }
+            .modal-input,
+            .modal-textarea {
+                font-size: 16px;
+            }
+            .modal-button {
+                font-size: 17px;
+            }
+            .post-card {
+                padding: 16px;
+            }
+            .post-title {
+                font-size: 18px;
+            }
+            .post-content {
+                font-size: 15px;
+            }
+            .post-image {
+                height: 200px;
+            }
+            .post-avatar {
+                width: 36px;
+                height: 36px;
+            }
+            .post-username {
+                font-size: 15px;
+            }
+            .verify-icon {
+                width: 18px;
+                height: 18px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container" id="mainContent">
         <div class="nav-bar">
-            <button class="logout-button" id="logout-button">Выйти</button>
             <div class="nav-bar-title">
                 FixSite 
-                <img width="20" height="20" src="https://img.icons8.com/color/48/instagram-verification-badge.png" alt="instagram-verification-badge"/>
+                <img class="verification-icon" width="20" height="20" src="https://img.icons8.com/color/48/instagram-verification-badge.png" alt="instagram-verification-badge"/>
+                <span class="tooltip">Проект социальной сети верифицирован.</span>
             </div>
-            <img class="plus-icon" width="20" height="20" src="https://img.icons8.com/ios/50/plus--v1.png" alt="plus--v1"/>
+            <img class="plus-icon" width="24" height="24" src="https://img.icons8.com/ios/50/plus--v1.png" alt="plus--v1"/>
         </div>
 
         <div class="tab-content active" id="mainContentTab">
@@ -56,12 +588,10 @@
                 <img src="https://img.icons8.com/color/40/sad.png" alt="sad"/>
                 <p>Ничего не найдено</p>
             </div>
+            <div class="posts-container" id="postsContainer"></div>
         </div>
         <div class="tab-content" id="leadersContentTab">
             <div style="text-align:center;padding:20px;">Список лидеров</div>
-        </div>
-        <div class="tab-content" id="profileContentTab">
-            <div style="text-align:center;padding:20px;">Профиль пользователя</div>
         </div>
     </div>
 
@@ -80,6 +610,294 @@
         </div>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <div class="modal-overlay" id="createPostModal">
+        <div class="modal-content">
+            <img class="modal-close" src="https://img.icons8.com/ios/24/cancel.png" alt="close"/>
+            <div class="modal-title">Создать пост</div>
+            <input type="text" class="modal-input" id="postTitle" placeholder="Заголовок (макс. 16 символов)" maxlength="16">
+            <textarea class="modal-textarea" id="postContent" placeholder="Текст поста..."></textarea>
+            <div class="file-upload" id="fileUpload">
+                <img src="https://img.icons8.com/ios/32/image.png" alt="upload"/>
+                <p>Перетащите или выберите изображение</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            <div class="preview-container" id="previewContainer"></div>
+            <button class="modal-button" id="submitPost">Опубликовать</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+
+        // Firebase configuration (замените на свои данные)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let userData = {};
+        let posts = [];
+        const defaultAvatar = 'https://img.icons8.com/color/48/user.png';
+
+        async function initApp() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    window.Telegram.WebApp.ready();
+                    userData = window.Telegram.WebApp.initDataUnsafe?.user || {};
+                    userData.avatar = userData.photo_url || defaultAvatar;
+                    userData.username = userData.username || 'User' + Math.floor(Math.random() * 1000);
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                } catch (e) {
+                    console.error('Ошибка инициализации Telegram WebApp:', e);
+                }
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    window.location.href = 'auth.html';
+                } else {
+                    // Проверяем верификацию пользователя
+                    const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
+                    userData.verify = userDoc.empty ? false : userDoc.docs[0].data().verify || false;
+                    loadPosts();
+                }
+            });
+        }
+
+        document.querySelectorAll('img').forEach(img => {
+            img.ondragstart = (event) => event.preventDefault();
+        });
+
+        initApp();
+
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const searchInput = document.querySelector('.search-input');
+        const notFoundCard = document.getElementById('notFoundCard');
+        const verificationIcon = document.querySelector('.nav-bar-title .verification-icon');
+        const tooltip = document.querySelector('.nav-bar-title .tooltip');
+        const plusIcon = document.querySelector('.plus-icon');
+        const modalOverlay = document.getElementById('createPostModal');
+        const modalClose = document.querySelector('.modal-close');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const submitPost = document.getElementById('submitPost');
+        const postContent = document.getElementById('postContent');
+
+        plusIcon.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            clearForm();
+        });
+
+        fileUpload.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    fileUpload.classList.add('hidden');
+                    previewContainer.innerHTML = `
+                        <div style="position: relative;">
+                            <img src="${e.target.result}" class="preview-image" alt="preview">
+                            <img src="https://img.icons8.com/ios/20/cancel.png" class="remove-image" alt="remove">
+                        </div>
+                    `;
+                    previewContainer.querySelector('.remove-image').addEventListener('click', () => {
+                        previewContainer.innerHTML = '';
+                        fileUpload.classList.remove('hidden');
+                        fileInput.value = '';
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        submitPost.addEventListener('click', async () => {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = postContent.value.trim();
+            const image = previewContainer.querySelector('.preview-image')?.src;
+
+            if (!title || !content) {
+                alert('Пожалуйста, заполните заголовок и текст поста');
+                return;
+            }
+
+            const newPost = {
+                title,
+                content,
+                image,
+                likes: 0,
+                dislikes: 0,
+                comments: 0,
+                avatar: userData.avatar || defaultAvatar,
+                username: userData.username || 'User',
+                verify: userData.verify || false,
+                createdAt: new Date()
+            };
+
+            try {
+                await addDoc(collection(db, 'posts'), newPost);
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                clearForm();
+                // Задержка 5 секунд перед отображением или требуется обновление
+                setTimeout(() => {
+                    loadPosts();
+                }, 5000);
+            } catch (e) {
+                console.error('Ошибка добавления поста:', e);
+                alert('Ошибка при публикации поста');
+            }
+        });
+
+        function clearForm() {
+            document.getElementById('postTitle').value = '';
+            postContent.value = '';
+            previewContainer.innerHTML = '';
+            fileUpload.classList.remove('hidden');
+            fileInput.value = '';
+        }
+
+        async function loadPosts() {
+            posts = [];
+            const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                posts.push({ id: doc.id, ...doc.data() });
+            });
+            renderPosts(posts);
+        }
+
+        function renderPosts(postsToRender) {
+            postsContainer.innerHTML = '';
+            if (postsToRender.length === 0) {
+                notFoundCard.classList.add('active');
+            } else {
+                notFoundCard.classList.remove('active');
+                postsToRender.forEach(post => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+                    postCard.innerHTML = `
+                        <div class="post-header">
+                            <img src="${post.avatar}" class="post-avatar" alt="avatar">
+                            <span class="post-username">${post.username}</span>
+                            ${post.verify ? `
+                                <img src="https://img.icons8.com/color/16/instagram-verification-badge.png" class="verify-icon" alt="verify">
+                                <span class="verify-tooltip">Верифицирован</span>
+                            ` : ''}
+                        </div>
+                        ${post.image ? `<img src="${post.image}" class="post-image" alt="post image">` : ''}
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-content">${post.content}</div>
+                        <div class="post-actions">
+                            <div class="action-item">
+                                <img src="https://img.icons8.com/ios-filled/18/heart.png" alt="like">
+                                <span>${post.likes}</span>
+                            </div>
+                            <div class="action-item">
+                                <img src="https://img.icons8.com/ios/18/dislike.png" alt="dislike">
+                                <span>${post.dislikes}</span>
+                            </div>
+                            <div class="action-item">
+                                <img src="https://img.icons8.com/ios/18/comments.png" alt="comment">
+                                <span>${post.comments}</span>
+                            </div>
+                        </div>
+                    `;
+                    postsContainer.appendChild(postCard);
+                });
+            }
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (item.classList.contains('active') || item.id === 'profileTab') return;
+
+                navItems.forEach(nav => nav.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                item.classList.add('active');
+                const tabId = item.id.replace('Tab', 'ContentTab');
+
+                document.getElementById(tabId).classList.add('active');
+                const mainContent = document.getElementById('mainContent');
+                mainContent.classList.add('fade-out');
+                setTimeout(() => {
+                    mainContent.classList.remove('fade-out');
+                }, 300);
+                searchInput.value = '';
+                notFoundCard.classList.remove('active');
+                renderPosts(posts);
+            });
+        });
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.trim().toLowerCase();
+            const filteredPosts = posts.filter(post =>
+                post.title.toLowerCase().includes(query) ||
+                post.content.toLowerCase().includes(query) ||
+                post.username.toLowerCase().includes(query)
+            );
+            renderPosts(filteredPosts);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const query = searchInput.value.trim().toLowerCase();
+                const filteredPosts = posts.filter(post =>
+                    post.title.toLowerCase().includes(query) ||
+                    post.content.toLowerCase().includes(query) ||
+                    post.username.toLowerCase().includes(query)
+                );
+                renderPosts(filteredPosts);
+            }
+        });
+
+        if (verificationIcon && tooltip) {
+            verificationIcon.addEventListener('click', (e) => {
+                e.preventDefault();
+                tooltip.classList.toggle('active');
+                setTimeout(() => {
+                    tooltip.classList.remove('active');
+                }, 2000);
+            });
+        }
+
+        document.addEventListener('touchstart', (e) => {
+            if (!e.target.closest('input, button, a, textarea')) {
+                document.activeElement.blur();
+            }
+        });
+
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('touchmove', (e) => {
+            if (e.scale !== 1) e.preventDefault();
+        }, { passive: false });
+    </script>
 </body>
 </html>
