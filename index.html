@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Game WebApp</title>
+    <script src="https://web.telegram.org/lib/telegram-web-app.js"></script>
+    <style>
+        * {margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-user-select:none;user-select:none;}
+        html,body {height:100%;overflow:hidden;background:#f5f5f5;color:#1a1a1a;touch-action:none;}
+        .container {display:flex;flex-direction:column;min-height:100vh;width:100%;max-width:480px;margin:0 auto;padding:20px;background:linear-gradient(180deg,#ffffff,#f0f0f5);opacity:1;}
+        .nav-bar {width:100%;background:rgba(255,255,255,0.9);padding:12px;margin-bottom:24px;border-radius:16px;font-size:18px;font-weight:800;color:#333;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(0,0,0,0.1);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;position:relative;}
+        .nav-bar-title {display:flex;align-items:center;justify-content:center;gap:8px;flex-grow:1;text-align:center;}
+        .nav-bar img.plus-icon {position:absolute;right:12px;}
+        .navigation {position:fixed;bottom:0;left:0;width:100%;display:flex;justify-content:space-around;background:rgba(255,255,255,0.9);padding:12px 0;border-top:1px solid rgba(107,70,193,0.1);box-shadow:0 -4px 15px rgba(0,0,0,0.1);backdrop-filter:blur(10px);}
+        .nav-item {display:flex;flex-direction:column;align-items:center;color:#666;cursor:pointer;width:33.33%;padding:5px;}
+        .nav-item.disabled {cursor:not-allowed;opacity:0.5;}
+        .nav-item img {width:26px;height:26px;margin-bottom:4px;filter:brightness(0.3);}
+        .nav-text {font-size:12px;font-weight:500;}
+        .nav-item.active {color:#6b46c1;}
+        .nav-item.active img {filter:brightness(1) drop-shadow(0 0 4px #6b46c1);}
+        .fade-out {animation:fadeOut 0.3s ease forwards;}
+        @keyframes fadeOut {from{opacity:1;}to{opacity:0;}}
+        .tab-content {display:none;}
+        .tab-content.active {display:block;}
+        .search-container {position:relative;width:80%;margin:0 auto 20px;transform-origin:center;}
+        .search-input {width:100%;padding:12px 40px 12px 16px;border-radius:14px;border:1px solid #e0e0e0;background:linear-gradient(145deg,#ffffff,#f8f8fb);font-size:15px;color:#333;box-shadow:0 4px 12px rgba(0,0,0,0.08);outline:none;}
+        .search-input:focus {border-color:transparent;box-shadow:0 0 0 3px rgba(107,70,193,0.3), 0 6px 16px rgba(0,0,0,0.1);transform:scale(1.03);}
+        .search-icon {position:absolute;right:12px;top:50%;transform:translateY(-50%);width:20px;height:20px;filter:brightness(0.6);}
+        .search-input:focus + .search-icon {filter:brightness(1) drop-shadow(0 0 2px #6b46c1);}
+        .not-found-card {display:none;text-align:center;padding:24px;background:linear-gradient(145deg,#ffffff,#f0f0ff);border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,0.12);margin:20px auto;width:90%;opacity:0;transform:translateY(20px);animation:slideIn 0.4s ease forwards;}
+        .not-found-card.active {display:block;}
+        .not-found-card img {width:40px;height:40px;margin-bottom:12px;}
+        .not-found-card p {font-size:16px;font-weight:500;color:#444;}
+        @keyframes slideIn {from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+        .logout-button {position:absolute;left:12px;padding:8px;background:#e63946;color:white;border:none;border-radius:8px;cursor:pointer;}
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContent">
+        <div class="nav-bar">
+            <button class="logout-button" id="logout-button">Выйти</button>
+            <div class="nav-bar-title">
+                FixSite 
+                <img width="20" height="20" src="https://img.icons8.com/color/48/instagram-verification-badge.png" alt="instagram-verification-badge"/>
+            </div>
+            <img class="plus-icon" width="20" height="20" src="https://img.icons8.com/ios/50/plus--v1.png" alt="plus--v1"/>
+        </div>
+
+        <div class="tab-content active" id="mainContentTab">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Поиск...">
+                <img src="https://img.icons8.com/ios/20/search.png" class="search-icon" alt="search"/>
+            </div>
+            <div class="not-found-card" id="notFoundCard">
+                <img src="https://img.icons8.com/color/40/sad.png" alt="sad"/>
+                <p>Ничего не найдено</p>
+            </div>
+        </div>
+        <div class="tab-content" id="leadersContentTab">
+            <div style="text-align:center;padding:20px;">Список лидеров</div>
+        </div>
+        <div class="tab-content" id="profileContentTab">
+            <div style="text-align:center;padding:20px;">Профиль пользователя</div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <div class="nav-item" id="leadersTab">
+            <img src="https://img.icons8.com/ios/26/leaderboard.png" alt="Лидеры"/>
+            <div class="nav-text">Лидеры</div>
+        </div>
+        <div class="nav-item active" id="mainTab">
+            <img src="https://img.icons8.com/ios/26/home.png" alt="Главная"/>
+            <div class="nav-text">Главная</div>
+        </div>
+        <div class="nav-item" id="profileTab">
+            <img src="https://img.icons8.com/ios/26/user.png" alt="Профиль"/>
+            <div class="nav-text">Профиль</div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
