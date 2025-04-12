@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SilentHub</title>
+    <title>FixSite</title>
     <style>
         * {
             margin: 0;
@@ -43,6 +43,7 @@
         .password-container {
             position: relative;
             width: 100%;
+            margin-bottom: 1rem;
         }
 
         .form input {
@@ -53,6 +54,7 @@
             font-size: 1rem;
             background: #f8f9fa;
             color: #2b2d42;
+            margin-bottom: 0.5rem;
         }
 
         .form input[type="password"] {
@@ -73,8 +75,7 @@
         .eye-icon {
             position: absolute;
             right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 14px;
             width: 20px;
             height: 20px;
             cursor: pointer;
@@ -92,10 +93,10 @@
         .tooltip.error {
             font-size: 0.75rem;
             color: #e63946;
-            margin-top: 0.1rem;
             margin-bottom: 0.5rem;
             text-align: left;
             display: none;
+            width: 100%;
         }
 
         .tooltip.error.active {
@@ -140,9 +141,14 @@
             margin-top: 0.5rem;
         }
 
-        .form button:hover {
+        .form button:hover:not(:disabled) {
             background: #6c757d;
             box-shadow: 0 6px 16px rgba(108, 117, 125, 0.2);
+        }
+
+        .form button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
         }
 
         .switch-form-text {
@@ -302,7 +308,7 @@
             color: #121212;
         }
 
-        body.dark-theme .form button:hover {
+        body.dark-theme .form button:hover:not(:disabled) {
             background: #e0e0e0;
             box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
         }
@@ -389,10 +395,14 @@
 
         <form id="register-form" class="form">
             <h2>Создать аккаунт</h2>
-            <input type="text" placeholder="Логин" id="register-username">
-            <div class="tooltip error" id="register-username-error"></div>
-            <input type="email" placeholder="Эл. почта" id="register-email">
-            <div class="tooltip error" id="register-email-error"></div>
+            <div>
+                <input type="text" placeholder="Логин" id="register-username">
+                <div class="tooltip error" id="register-username-error"></div>
+            </div>
+            <div>
+                <input type or="email" placeholder="Эл. почта" id="register-email">
+                <div class="tooltip error" id="register-email-error"></div>
+            </div>
             <div class="password-container">
                 <input type="password" placeholder="Пароль" id="register-password">
                 <div class="eye-icon">
@@ -433,8 +443,22 @@
     </div>
 
     <script type="module">
-        import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, db } from './firebase.js';
-        import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQM63yuwWpfS6Fw373pYioMn5H2cP-M4s",
+            authDomain: "fixsite.firebaseapp.com",
+            projectId: "fixsite",
+            storageBucket: "fixsite.firebasestorage.app",
+            messagingSenderId: "501209400097",
+            appId: "1:501209400097:web:b484a8f81c730fa40fb460"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
         function resetFormInputs(form) {
             const inputs = form.querySelectorAll('input');
@@ -591,22 +615,39 @@
 
         async function handleRegister(e) {
             e.preventDefault();
+            const registerButton = document.getElementById('register-button');
+            const loginButton = document.getElementById('login-button');
+            registerButton.disabled = true;
+            loginButton.disabled = true;
+
             const username = document.getElementById('register-username').value.trim();
             const email = document.getElementById('register-email').value.trim();
             const password = document.getElementById('register-password').value.trim();
 
             if (!validateRegisterForm(username, email, password)) {
                 vibrate();
+                registerButton.disabled = false;
+                loginButton.disabled = false;
                 return;
             }
 
             try {
+                const usernameDoc = await getDoc(doc(db, "usernames", username));
+                if (usernameDoc.exists()) {
+                    showError('register-username-error', 'Этот логин уже занят');
+                    vibrate();
+                    registerButton.disabled = false;
+                    loginButton.disabled = false;
+                    return;
+                }
+
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
                 await setDoc(doc(db, "users", user.uid), {
                     username: username,
                     email: email,
+                    verify: false,
                     createdAt: new Date()
                 });
 
@@ -628,16 +669,26 @@
                     default:
                         showError('register-email-error', 'Ошибка: ' + error.message);
                 }
+            } finally {
+                registerButton.disabled = false;
+                loginButton.disabled = false;
             }
         }
 
         async function handleLogin(e) {
             e.preventDefault();
+            const loginButton = document.getElementById('login-button');
+            const registerButton = document.getElementById('register-button');
+            loginButton.disabled = true;
+            registerButton.disabled = true;
+
             let identifier = document.getElementById('login-identifier').value.trim();
             const password = document.getElementById('login-password').value.trim();
 
             if (!validateLoginForm(identifier, password)) {
                 vibrate();
+                loginButton.disabled = false;
+                registerButton.disabled = false;
                 return;
             }
 
@@ -647,6 +698,8 @@
                     if (!email) {
                         showError('login-identifier-error', 'Логин не найден');
                         vibrate();
+                        loginButton.disabled = false;
+                        registerButton.disabled = false;
                         return;
                     }
                     identifier = email;
@@ -667,6 +720,9 @@
                     default:
                         showError('login-identifier-error', 'Ошибка: ' + error.message);
                 }
+            } finally {
+                loginButton.disabled = false;
+                registerButton.disabled = false;
             }
         }
 
@@ -676,7 +732,6 @@
             resetFormInputs(loginForm);
             resetFormInputs(registerForm);
 
-            // Проверка сохранённой темы
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-theme');
                 document.getElementById('theme-switcher').textContent = 'Светлая тема';
