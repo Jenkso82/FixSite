@@ -633,7 +633,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+        import { getFirestore, collection, addDoc, query, orderBy, where, onSnapshot, getDocs } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
 
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
@@ -669,10 +669,12 @@
                 if (!user) {
                     window.location.href = 'auth.html';
                 } else {
-                    userData.uid = user.uid; // Сохраняем UID пользователя
+                    userData.uid = user.uid;
                     const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
                     userData.verify = userDoc.empty ? false : userDoc.docs[0].data().verify || false;
-                    loadPosts();
+                    // Принудительно обновляем токен
+                    await user.getIdToken(true);
+                    loadPostsWithRetry();
                 }
             });
         }
@@ -762,7 +764,7 @@
                 avatar: userData.avatar || defaultAvatar,
                 username: userData.username || 'User',
                 verify: userData.verify || false,
-                userId: userData.uid, // Добавляем userId для проверки прав
+                userId: userData.uid,
                 createdAt: new Date()
             };
 
@@ -771,9 +773,6 @@
                 modalOverlay.classList.remove('active');
                 document.body.style.overflow = '';
                 clearForm();
-                setTimeout(() => {
-                    loadPosts();
-                }, 5000);
             } catch (e) {
                 console.error('Ошибка добавления поста:', e);
                 alert('Ошибка при публикации поста');
@@ -790,14 +789,41 @@
             fileInput.value = '';
         }
 
-        async function loadPosts() {
-            posts = [];
+        function loadPostsWithRetry(attempts = 3, delay = 5000) {
             const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach((doc) => {
-                posts.push({ id: doc.id, ...doc.data() });
+            onSnapshot(q, (snapshot) => {
+                posts = [];
+                snapshot.forEach((doc) => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+                renderPosts(posts);
+            }, (error) => {
+                console.error('Ошибка onSnapshot:', error);
+                if (attempts > 0) {
+                    console.log(`Повторная попытка (${attempts} осталось)...`);
+                    setTimeout(() => loadPostsWithRetry(attempts - 1, delay), delay);
+                } else {
+                    console.error('Не удалось подключиться после всех попыток');
+                    alert('Ошибка подключения к Firestore. Проверьте интернет-соединение.');
+                    // Загружаем посты через getDocs в качестве запасного варианта
+                    loadPostsFallback();
+                }
             });
-            renderPosts(posts);
+        }
+
+        async function loadPostsFallback() {
+            try {
+                posts = [];
+                const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach((doc) => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+                renderPosts(posts);
+            } catch (e) {
+                console.error('Ошибка загрузки постов через getDocs:', e);
+                alert('Не удалось загрузить посты. Попробуйте снова позже.');
+            }
         }
 
         function renderPosts(postsToRender) {
