@@ -1,4 +1,3 @@
-// app.js
 import { auth, signOut } from './firebase.js';
 
 let userData = {};
@@ -15,7 +14,6 @@ function initializeApp() {
         }
     }
 
-    // Проверка авторизации
     auth.onAuthStateChanged(user => {
         if (!user) {
             window.location.href = 'auth.html';
@@ -34,7 +32,6 @@ const tabContents = document.querySelectorAll('.tab-content');
 const searchInput = document.querySelector('.search-input');
 const notFoundCard = document.getElementById('notFoundCard');
 
-// Переключение вкладок
 navItems.forEach(item => {
     item.addEventListener('click', () => {
         if (item.classList.contains('active')) return;
@@ -59,7 +56,6 @@ navItems.forEach(item => {
     });
 });
 
-// Логика поиска
 searchInput.addEventListener('input', () => {
     if (searchInput.value.trim() !== '') {
         notFoundCard.classList.add('active');
@@ -74,7 +70,6 @@ searchInput.addEventListener('keydown', (e) => {
     }
 });
 
-// Обработчик выхода
 document.getElementById('logout-button').addEventListener('click', async () => {
     try {
         await signOut(auth);
@@ -83,3 +78,14 @@ document.getElementById('logout-button').addEventListener('click', async () => {
         console.error('Ошибка выхода:', error);
     }
 });
+
+document.addEventListener('touchstart', (e) => {
+    if (!e.target.closest('input, button, a')) {
+        document.activeElement.blur();
+    }
+});
+
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('touchmove', (e) => {
+    if (e.scale !== 1) e.preventDefault();
+}, { passive: false });
