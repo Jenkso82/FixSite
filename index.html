@@ -371,6 +371,10 @@
         .modal-button:active {
             transform: scale(0.98);
         }
+        .modal-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
         .post-card {
             background: #ffffff;
             border-radius: 12px;
@@ -631,7 +635,6 @@
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
-        // Firebase configuration (замените на свои данные)
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -666,7 +669,6 @@
                 if (!user) {
                     window.location.href = 'auth.html';
                 } else {
-                    // Проверяем верификацию пользователя
                     const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
                     userData.verify = userDoc.empty ? false : userDoc.docs[0].data().verify || false;
                     loadPosts();
@@ -738,12 +740,14 @@
         }
 
         submitPost.addEventListener('click', async () => {
+            submitPost.disabled = true;
             const title = document.getElementById('postTitle').value.trim();
             const content = postContent.value.trim();
             const image = previewContainer.querySelector('.preview-image')?.src;
 
             if (!title || !content) {
                 alert('Пожалуйста, заполните заголовок и текст поста');
+                submitPost.disabled = false;
                 return;
             }
 
@@ -765,13 +769,14 @@
                 modalOverlay.classList.remove('active');
                 document.body.style.overflow = '';
                 clearForm();
-                // Задержка 5 секунд перед отображением или требуется обновление
                 setTimeout(() => {
                     loadPosts();
                 }, 5000);
             } catch (e) {
                 console.error('Ошибка добавления поста:', e);
                 alert('Ошибка при публикации поста');
+            } finally {
+                submitPost.disabled = false;
             }
         });
 
@@ -794,6 +799,7 @@
         }
 
         function renderPosts(postsToRender) {
+            const postsContainer = document.getElementById('postsContainer');
             postsContainer.innerHTML = '';
             if (postsToRender.length === 0) {
                 notFoundCard.classList.add('active');
