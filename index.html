@@ -2,9 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FixSite</title>
-    <script src="https://web.telegram.org/k/"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixSite - Соцсеть</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -15,14 +14,16 @@
             -webkit-user-select: none;
             user-select: none;
         }
+
         html, body {
             height: 100%;
-            background: #f7f7f7;
-            color: #222;
+            background: #1a1a1a;
+            color: #ffffff;
             overscroll-behavior: none;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
         }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -31,41 +32,186 @@
             max-width: 480px;
             margin: 0 auto;
             padding: 16px;
-            background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+            background: linear-gradient(180deg, #2c2c2c 0%, #1a1a1a 100%);
             overflow-y: auto;
         }
+
         .nav-bar {
             width: 100%;
-            background: #ffffff;
+            background: #2c2c2c;
             padding: 12px 16px;
             margin-bottom: 20px;
             border-radius: 10px;
             font-size: 18px;
             font-weight: 700;
-            color: #222;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
         }
+
         .nav-bar-title {
             display: flex;
             align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
             gap: 8px;
             position: relative;
         }
+
         .nav-bar img.plus-icon {
             position: absolute;
             right: 16px;
             width: 24px;
             height: 24px;
             cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            filter: brightness(1);
+        }
+
+        .nav-bar img.plus-icon:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2) drop-shadow(0 0 8px rgba(30, 144, 255, 0.5));
+        }
+
+        .nav-bar img.plus-icon:active {
+            animation: spinAndGlow 0.6s ease forwards;
+        }
+
+        @keyframes spinAndGlow {
+            0% {
+                transform: scale(1) rotate(0deg);
+                filter: brightness(1) drop-shadow(0 0 0 rgba(30, 144, 255, 0));
+            }
+            50% {
+                transform: scale(1.3) rotate(180deg);
+                filter: brightness(1.5) drop-shadow(0 0 12px rgba(30, 144, 255, 0.8));
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+                filter: brightness(1) drop-shadow(0 0 0 rgba(30, 144, 255, 0));
+            }
+        }
+
+        .verified-icon {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
             transition: transform 0.2s;
         }
-        .nav-bar img.plus-icon:active {
-            transform: scale(0.9);
+
+        .verified-icon:hover {
+            transform: scale(1.1);
         }
+
+        .verified-tooltip {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333333;
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .verified-icon:hover + .verified-tooltip,
+        .verified-icon:active + .verified-tooltip,
+        .verified-icon.show-tooltip + .verified-tooltip {
+            display: block;
+            opacity: 1;
+            transform: translateX(-50%) translateY(4px);
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #444444;
+            background: #333333;
+            font-size: 15px;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            outline: none;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            user-select: auto;
+        }
+
+        .search-input:focus {
+            border-color: #1e90ff;
+            box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            filter: brightness(0.8);
+            transition: filter 0.2s;
+        }
+
+        .search-input:focus + .search-icon {
+            filter: brightness(1);
+        }
+
+        .not-found-card {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            margin: 0 auto 20px;
+            width: 90%;
+            opacity: 0;
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        .not-found-card.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .not-found-card img {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 10px;
+            filter: brightness(1);
+        }
+
+        .not-found-card p {
+            font-size: 15px;
+            font-weight: 500;
+            color: #aaaaaa;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .navigation {
             position: fixed;
             bottom: 0;
@@ -76,30 +222,33 @@
             transform: translateX(-50%);
             display: flex;
             justify-content: space-around;
-            background: #ffffff;
+            background: #2c2c2c;
             padding: 10px 0;
             border-radius: 12px 12px 0 0;
-            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
             z-index: 100;
         }
+
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: #666;
+            color: #aaaaaa;
             cursor: pointer;
             width: 33.33%;
             padding: 8px;
             transition: color 0.2s, transform 0.2s;
         }
+
+        .nav-item:hover {
+            color: #ffffff;
+        }
+
         .nav-item:active {
             transform: scale(0.95);
         }
-        .nav-item.disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
+
         .nav-item img {
             width: 24px;
             height: 24px;
@@ -107,831 +256,816 @@
             filter: brightness(0.5);
             transition: filter 0.2s;
         }
+
+        .nav-item:hover img {
+            filter: brightness(1);
+        }
+
         .nav-text {
             font-size: 11px;
             font-weight: 500;
         }
+
         .nav-item.active {
-            color: #007bff;
+            color: #1e90ff;
         }
+
         .nav-item.active img {
             filter: brightness(1);
         }
-        .fade-out {
-            animation: fadeOut 0.3s ease forwards;
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        .tab-content {
-            display: none;
-            flex-direction: column;
+
+        .content {
             flex-grow: 1;
             padding-bottom: 80px;
-        }
-        .tab-content.active {
             display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
-        .search-container {
-            position: relative;
-            width: 100%;
-            max-width: 320px;
-            margin: 0 auto 20px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 12px 40px 12px 16px;
-            border-radius: 10px;
-            border: 1px solid #e0e0e0;
-            background: #ffffff;
-            font-size: 15px;
-            color: #222;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-            outline: none;
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-            user-select: auto;
-        }
-        .search-input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
-            transform: scale(1.02);
-        }
-        .search-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            filter: brightness(0.6);
-            transition: filter 0.2s;
-        }
-        .search-input:focus + .search-icon {
-            filter: brightness(1);
-        }
-        .posts-container {
-            flex-grow: 1;
-            min-height: 100px;
-        }
-        .not-found-card {
-            display: none;
-            text-align: center;
+
+        .post {
+            background: #21262d;
             padding: 20px;
-            background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            margin: 0 auto 20px;
-            width: 90%;
-            opacity: 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
             animation: slideIn 0.4s ease forwards;
+            position: relative;
+            border: 0.5px solid #444444;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .not-found-card.active {
-            display: block;
-            opacity: 1;
+
+        .post:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(30, 144, 255, 0.2);
         }
-        .not-found-card img {
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .post-avatar {
             width: 36px;
             height: 36px;
-            margin-bottom: 10px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #161b22;
+            border: 1px solid #444444;
         }
-        .not-found-card p {
-            font-size: 15px;
-            font-weight: 500;
-            color: #333;
+
+        .post-username {
+            font-size: 16px;
+            font-weight: 600;
+            color: #c9d1d9;
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .tooltip {
-            display: none;
-            position: absolute;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
+
+        .post-time {
             font-size: 12px;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            background: #161b22;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        .post-text {
+            font-size: 15px;
             font-weight: 400;
-            white-space: nowrap;
-            z-index: 10;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            color: #c9d1d9;
+            line-height: 1.6;
         }
-        .nav-bar-title img:hover + .tooltip,
-        .tooltip.active {
-            display: block;
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-top: 12px;
+            border-top: 1px solid #30363d;
         }
-        .modal-overlay {
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: #8b949e;
+            font-size: 14px;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .action-item img {
+            width: 22px;
+            height: 22px;
+            filter: brightness(0.7);
+            transition: filter 0.2s, transform 0.2s;
+        }
+
+        .action-item:hover {
+            color: #ffffff;
+        }
+
+        .action-item:hover img {
+            filter: brightness(1);
+            transform: scale(1.15);
+        }
+
+        .action-item.active {
+            color: #1e90ff;
+        }
+
+        .action-item.active img {
+            filter: brightness(1);
+        }
+
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 200;
             justify-content: center;
-            animation: fadeIn 0.3s ease;
-            touch-action: none;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .modal-overlay.active {
+
+        .modal.active {
             display: flex;
+            opacity: 1;
         }
+
         .modal-content {
-            background: #ffffff;
-            border-radius: 12px;
+            background: linear-gradient(145deg, #21262d 0%, #161b22 100%);
             padding: 20px;
+            border-radius: 20px;
             width: 90%;
             max-width: 400px;
-            max-height: 80vh;
-            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             position: relative;
-            animation: slideUp 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            touch-action: pan-y;
+            border: 1px solid #30363d;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
         .modal-close {
             position: absolute;
-            right: 16px;
-            top: 16px;
+            top: 10px;
+            right: 10px;
             width: 24px;
             height: 24px;
             cursor: pointer;
-            transition: transform 0.2s;
+            filter: brightness(0.8);
+            transition: filter 0.2s, transform 0.2s;
         }
+
         .modal-close:hover {
-            transform: scale(1.1);
+            filter: brightness(1);
+            transform: rotate(90deg);
         }
-        .modal-title {
+
+        .modal-content h2 {
             font-size: 18px;
             font-weight: 700;
             margin-bottom: 16px;
-            color: #222;
+            text-align: center;
+            color: #c9d1d9;
+            animation: fadeInElement 0.5s ease forwards;
         }
-        .modal-input {
+
+        .modal-content input,
+        .modal-content textarea {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 16px;
-            border: 1px solid #e0e0e0;
+            padding: 10px;
+            margin-bottom: 12px;
             border-radius: 8px;
-            font-size: 15px;
+            border: 1px solid #30363d;
+            background: #161b22;
+            color: #c9d1d9;
+            font-size: 14px;
             outline: none;
-            transition: border-color 0.2s;
-            user-select: auto;
-        }
-        .modal-input:focus {
-            border-color: #007bff;
-        }
-        .modal-textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            min-height: 100px;
             resize: none;
-            outline: none;
-            transition: border-color 0.2s;
             user-select: auto;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            animation: fadeInElement 0.5s ease forwards;
         }
-        .modal-textarea:focus {
-            border-color: #007bff;
+
+        .modal-content input:focus,
+        .modal-content textarea:focus {
+            border-color: #1e90ff;
+            box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.2);
         }
-        .file-upload {
+
+        .image-upload {
+            width: 100%;
+            height: 100px;
+            border: 2px dashed #30363d;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 16px;
-            border: 2px dashed #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-        .file-upload:hover {
-            border-color: #007bff;
-        }
-        .file-upload img {
-            width: 32px;
-            height: 32px;
-            margin-bottom: 8px;
-        }
-        .file-upload p {
-            font-size: 14px;
-            color: #666;
-        }
-        .file-upload.hidden {
-            display: none;
-        }
-        .preview-container {
-            margin-bottom: 16px;
-            position: relative;
-            width: 100%;
-        }
-        .preview-image {
-            width: 100%;
-            max-height: 150px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-        .remove-image {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 20px;
-            height: 20px;
-            background: #fff;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .modal-button {
-            width: 100%;
-            padding: 12px;
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-        }
-        .modal-button:hover {
-            background: #0056b3;
-        }
-        .modal-button:active {
-            transform: scale(0.98);
-        }
-        .modal-button:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        .post-card {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 12px;
-            padding: 12px;
-            animation: slideIn 0.4s ease;
-            transition: transform 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-        .post-card:hover {
-            transform: translateY(-2px);
-        }
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            position: relative;
-        }
-        .post-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            margin-right: 8px;
-            object-fit: cover;
-        }
-        .post-username {
-            font-size: 14px;
-            font-weight: 600;
-            color: #222;
-        }
-        .verify-icon {
-            width: 16px;
-            height: 16px;
-            margin-left: 4px;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: #161b22;
+            transition: border-color 0.2s, background 0.2s;
+            animation: fadeInElement 0.5s ease forwards;
         }
-        .verify-tooltip {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: #fff;
-            padding: 6px 10px;
-            border-radius: 6px;
+
+        .image-upload:hover {
+            border-color: #1e90ff;
+            background: #21262d;
+        }
+
+        .image-upload img.placeholder {
+            width: 36px;
+            height: 36px;
+            filter: brightness(0.7);
+            transition: transform 0.3s ease;
+        }
+
+        .image-upload:hover img.placeholder {
+            transform: scale(1.1);
+        }
+
+        .image-upload p {
             font-size: 12px;
-            font-weight: 400;
-            white-space: nowrap;
-            z-index: 10;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            color: #8b949e;
+            margin-top: 6px;
         }
-        .verify-icon:hover + .verify-tooltip,
-        .verify-tooltip.active {
+
+        .image-upload input[type="file"] {
+            display: none;
+        }
+
+        .image-preview {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #161b22;
+        }
+
+        .image-upload.has-image .placeholder,
+        .image-upload.has-image p {
+            display: none;
+        }
+
+        .image-upload.has-image .image-preview {
             display: block;
         }
-        .post-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 4px;
-            user-select: text;
-        }
-        .post-image {
+
+        .publish-button {
             width: 100%;
-            height: 150px;
-            object-fit: cover;
+            padding: 10px;
+            background: #1e90ff;
+            border: none;
             border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        .post-content {
+            color: #ffffff;
             font-size: 14px;
-            color: #333;
-            line-height: 1.4;
-            margin-bottom: 8px;
-            flex-grow: 1;
-            user-select: text;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(30, 144, 255, 0.3);
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            animation: fadeInElement 0.5s ease forwards;
         }
-        .post-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding-top: 8px;
-            border-top: 1px solid #e0e0e0;
+
+        .publish-button:hover {
+            background: #1c86ee;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4);
         }
-        .action-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 13px;
-            color: #666;
+
+        .publish-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(30, 144, 255, 0.3);
         }
-        .action-item img {
-            width: 18px;
-            height: 18px;
+
+        @keyframes fadeInElement {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+
         @media (min-width: 768px) {
             .container {
                 max-width: 1200px;
                 padding: 24px;
             }
+
             .nav-bar {
                 padding: 16px 24px;
                 font-size: 20px;
                 border-radius: 12px;
             }
+
             .nav-bar img.plus-icon {
                 width: 28px;
                 height: 28px;
             }
+
+            .verified-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .verified-tooltip {
+                font-size: 13px;
+                padding: 8px 14px;
+            }
+
             .navigation {
+                position: relative;
                 max-width: 1200px;
                 padding: 12px 0;
-                border-radius: 14px 14px 0 0;
+                border-radius: 14px;
+                box-shadow: none;
+                justify-content: center;
+                gap: 20px;
+                background: transparent;
             }
+
             .nav-item {
-                padding: 12px;
+                flex-direction: row;
+                width: auto;
+                padding: 12px 20px;
+                border-radius: 8px;
+                transition: background-color 0.2s, color 0.2s, transform 0.2s;
             }
+
             .nav-item img {
                 width: 28px;
                 height: 28px;
+                margin-bottom: 0;
+                margin-right: 8px;
             }
+
             .nav-text {
                 font-size: 13px;
             }
-            .search-container {
-                max-width: 400px;
+
+            .nav-item:hover {
+                background-color: #333333;
+                color: #ffffff;
             }
+
+            .nav-item:active {
+                transform: scale(0.98);
+            }
+
+            .search-container {
+                max-width: 320px;
+            }
+
             .search-input {
                 font-size: 16px;
                 padding: 14px 44px 14px 20px;
             }
+
             .search-icon {
                 width: 22px;
                 height: 22px;
             }
+
             .not-found-card {
                 width: 70%;
                 padding: 24px;
             }
+
             .not-found-card img {
                 width: 40px;
                 height: 40px;
             }
+
             .not-found-card p {
                 font-size: 16px;
             }
-            .modal-content {
-                max-width: 500px;
-                padding: 24px;
+
+            .content {
+                padding-bottom: 20px;
             }
-            .modal-title {
+
+            .post {
+                padding: 24px;
+                border-radius: 14px;
+            }
+
+            .post-image {
+                max-height: 350px;
+                border-radius: 12px;
+            }
+
+            .post-avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .post-title {
                 font-size: 20px;
             }
-            .modal-input,
-            .modal-textarea {
+
+            .post-text {
                 font-size: 16px;
             }
-            .modal-button {
-                font-size: 17px;
-            }
-            .post-card {
-                padding: 16px;
-            }
-            .post-title {
-                font-size: 18px;
-            }
-            .post-content {
+
+            .action-item {
                 font-size: 15px;
             }
-            .post-image {
-                height: 200px;
+
+            .action-item img {
+                width: 24px;
+                height: 24px;
             }
-            .post-avatar {
-                width: 36px;
-                height: 36px;
+
+            .modal-content {
+                padding: 24px;
+                max-width: 450px;
             }
-            .post-username {
+
+            .modal-content h2 {
+                font-size: 20px;
+            }
+
+            .modal-content input,
+            .modal-content textarea {
                 font-size: 15px;
+                padding: 12px;
             }
-            .verify-icon {
-                width: 18px;
-                height: 18px;
+
+            .image-upload {
+                height: 120px;
+            }
+
+            .image-upload img.placeholder {
+                width: 40px;
+                height: 40px;
+            }
+
+            .image-upload p {
+                font-size: 13px;
+            }
+
+            .publish-button {
+                font-size: 15px;
+                padding: 12px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="mainContent">
+    <div class="container">
         <div class="nav-bar">
             <div class="nav-bar-title">
-                FixSite 
-                <img class="verification-icon" width="20" height="20" src="https://img.icons8.com/color/48/instagram-verification-badge.png" alt="instagram-verification-badge"/>
-                <span class="tooltip">Проект социальной сети верифицирован.</span>
+                FixSite
+                <img class="verified-icon" src="https://img.icons8.com/color/48/instagram-verification-badge.png" alt="verified"/>
+                <span class="verified-tooltip">Проект верифицирован</span>
             </div>
-            <img class="plus-icon" width="24" height="24" src="https://img.icons8.com/ios/50/plus--v1.png" alt="plus--v1"/>
+            <img class="plus-icon" src="https://img.icons8.com/ios/50/ffffff/plus--v1.png" alt="plus--v1"/>
         </div>
-
-        <div class="tab-content active" id="mainContentTab">
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="Поиск...">
-                <img src="https://img.icons8.com/ios/20/search.png" class="search-icon" alt="search"/>
-            </div>
-            <div class="not-found-card" id="notFoundCard">
-                <img src="https://img.icons8.com/color/40/sad.png" alt="sad"/>
-                <p>Ничего не найдено</p>
-            </div>
-            <div class="posts-container" id="postsContainer"></div>
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Поиск...">
+            <img class="search-icon" src="https://img.icons8.com/ios/50/ffffff/search--v1.png" alt="search"/>
         </div>
-        <div class="tab-content" id="leadersContentTab">
-            <div style="text-align:center;padding:20px;">Список лидеров</div>
+        <div class="not-found-card" id="not-found">
+            <img src="https://img.icons8.com/ios/50/ffffff/sad.png" alt="sad"/>
+            <p>Ничего не найдено</p>
+        </div>
+        <div class="content" id="content"></div>
+        <div class="navigation">
+            <div class="nav-item">
+                <img src="https://img.icons8.com/ios/50/ffffff/leaderboard.png" alt="leaderboard"/>
+                <span class="nav-text">Лидеры</span>
+            </div>
+            <div class="nav-item active">
+                <img src="https://img.icons8.com/ios/50/ffffff/home.png" alt="home"/>
+                <span class="nav-text">Главное</span>
+            </div>
+            <div class="nav-item">
+                <img src="https://img.icons8.com/ios/50/ffffff/user.png" alt="profile"/>
+                <span class="nav-text">Профиль</span>
+            </div>
         </div>
     </div>
-
-    <div class="navigation">
-        <div class="nav-item" id="leadersTab">
-            <img src="https://img.icons8.com/ios/26/leaderboard.png" alt="Лидеры"/>
-            <div class="nav-text">Лидеры</div>
-        </div>
-        <div class="nav-item active" id="mainTab">
-            <img src="https://img.icons8.com/ios/26/home.png" alt="Главная"/>
-            <div class="nav-text">Главная</div>
-        </div>
-        <div class="nav-item" id="profileTab">
-            <img src="https://img.icons8.com/ios/26/user.png" alt="Профиль"/>
-            <div class="nav-text">Профиль</div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="createPostModal">
+    <div class="modal" id="post-modal">
         <div class="modal-content">
-            <img class="modal-close" src="https://img.icons8.com/ios/24/cancel.png" alt="close"/>
-            <div class="modal-title">Создать пост</div>
-            <input type="text" class="modal-input" id="postTitle" placeholder="Заголовок (макс. 16 символов)" maxlength="16">
-            <textarea class="modal-textarea" id="postContent" placeholder="Текст поста..."></textarea>
-            <div class="file-upload" id="fileUpload">
-                <img src="https://img.icons8.com/ios/32/image.png" alt="upload"/>
+            <img class="modal-close" src="https://img.icons8.com/ios/50/ffffff/close-window.png" alt="close"/>
+            <h2>Создать новый пост</h2>
+            <input type="text" id="post-title" placeholder="Заголовок (макс. 16 символов)" maxlength="16">
+            <textarea id="post-text" placeholder="Текст (макс. 30 символов)" maxlength="30"></textarea>
+            <div class="image-upload" id="image-upload">
+                <img class="placeholder" src="https://img.icons8.com/ios/50/ffffff/image.png" alt="image-placeholder"/>
                 <p>Перетащите или выберите изображение</p>
+                <input type="file" id="image-input" accept="image/*">
+                <img class="image-preview" id="image-preview" alt="preview"/>
             </div>
-            <input type="file" id="fileInput" accept="image/*" style="display: none;">
-            <div class="preview-container" id="previewContainer"></div>
-            <button class="modal-button" id="submitPost">Опубликовать</button>
+            <button class="publish-button" id="publish-button">Опубликовать</button>
         </div>
     </div>
-
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
-        import { getFirestore, collection, addDoc, query, orderBy, where, onSnapshot, getDocs } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
-
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let userData = {};
-        let posts = [];
-        const defaultAvatar = 'https://img.icons8.com/color/48/user.png';
-
-        async function initApp() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                try {
-                    window.Telegram.WebApp.ready();
-                    userData = window.Telegram.WebApp.initDataUnsafe?.user || {};
-                    userData.avatar = userData.photo_url || defaultAvatar;
-                    userData.username = userData.username || 'User' + Math.floor(Math.random() * 1000);
-                    localStorage.setItem('userData', JSON.stringify(userData));
-                } catch (e) {
-                    console.error('Ошибка инициализации Telegram WebApp:', e);
-                }
-            }
-
-            onAuthStateChanged(auth, async (user) => {
-                if (!user) {
-                    window.location.href = 'auth.html';
-                } else {
-                    userData.uid = user.uid;
-                    const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
-                    userData.verify = userDoc.empty ? false : userDoc.docs[0].data().verify || false;
-                    // Принудительно обновляем токен
-                    await user.getIdToken(true);
-                    loadPostsWithRetry();
-                }
-            });
-        }
-
-        document.querySelectorAll('img').forEach(img => {
-            img.ondragstart = (event) => event.preventDefault();
-        });
-
-        initApp();
-
-        const navItems = document.querySelectorAll('.nav-item');
-        const tabContents = document.querySelectorAll('.tab-content');
+    <script>
         const searchInput = document.querySelector('.search-input');
-        const notFoundCard = document.getElementById('notFoundCard');
-        const verificationIcon = document.querySelector('.nav-bar-title .verification-icon');
-        const tooltip = document.querySelector('.nav-bar-title .tooltip');
+        const notFoundCard = document.querySelector('.not-found-card');
+        const navItems = document.querySelectorAll('.nav-item');
+        const verifiedIcon = document.querySelector('.verified-icon');
         const plusIcon = document.querySelector('.plus-icon');
-        const modalOverlay = document.getElementById('createPostModal');
+        const modal = document.querySelector('#post-modal');
         const modalClose = document.querySelector('.modal-close');
-        const fileUpload = document.getElementById('fileUpload');
-        const fileInput = document.getElementById('fileInput');
-        const previewContainer = document.getElementById('previewContainer');
-        const submitPost = document.getElementById('submitPost');
-        const postContent = document.getElementById('postContent');
+        const imageUpload = document.querySelector('#image-upload');
+        const imageInput = document.querySelector('#image-input');
+        const imagePreview = document.querySelector('#image-preview');
+        const publishButton = document.querySelector('#publish-button');
+        const postTitle = document.querySelector('#post-title');
+        const postText = document.querySelector('#post-text');
+        const content = document.querySelector('#content');
 
-        plusIcon.addEventListener('click', () => {
-            modalOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
+        function updatePostTimes() {
+            const posts = content.querySelectorAll('.post');
+            posts.forEach(post => {
+                const createdAt = post.dataset.createdAt;
+                if (createdAt) {
+                    const timeElement = post.querySelector('.post-time');
+                    const diff = Date.now() - parseInt(createdAt);
+                    const seconds = Math.floor(diff / 1000);
+                    const minutes = Math.floor(seconds / 60);
+                    const hours = Math.floor(minutes / 60);
 
-        modalClose.addEventListener('click', () => {
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            clearForm();
-        });
-
-        fileUpload.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length > 0) {
-                handleFile(fileInput.files[0]);
-            }
-        });
-
-        function handleFile(file) {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    fileUpload.classList.add('hidden');
-                    previewContainer.innerHTML = `
-                        <div style="position: relative;">
-                            <img src="${e.target.result}" class="preview-image" alt="preview">
-                            <img src="https://img.icons8.com/ios/20/cancel.png" class="remove-image" alt="remove">
-                        </div>
-                    `;
-                    previewContainer.querySelector('.remove-image').addEventListener('click', () => {
-                        previewContainer.innerHTML = '';
-                        fileUpload.classList.remove('hidden');
-                        fileInput.value = '';
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        submitPost.addEventListener('click', async () => {
-            submitPost.disabled = true;
-            const title = document.getElementById('postTitle').value.trim();
-            const content = postContent.value.trim();
-            const image = previewContainer.querySelector('.preview-image')?.src;
-
-            if (!title || !content) {
-                alert('Пожалуйста, заполните заголовок и текст поста');
-                submitPost.disabled = false;
-                return;
-            }
-
-            const newPost = {
-                title,
-                content,
-                image,
-                likes: 0,
-                dislikes: 0,
-                comments: 0,
-                avatar: userData.avatar || defaultAvatar,
-                username: userData.username || 'User',
-                verify: userData.verify || false,
-                userId: userData.uid,
-                createdAt: new Date()
-            };
-
-            try {
-                await addDoc(collection(db, 'posts'), newPost);
-                modalOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-                clearForm();
-            } catch (e) {
-                console.error('Ошибка добавления поста:', e);
-                alert('Ошибка при публикации поста');
-            } finally {
-                submitPost.disabled = false;
-            }
-        });
-
-        function clearForm() {
-            document.getElementById('postTitle').value = '';
-            postContent.value = '';
-            previewContainer.innerHTML = '';
-            fileUpload.classList.remove('hidden');
-            fileInput.value = '';
-        }
-
-        function loadPostsWithRetry(attempts = 3, delay = 5000) {
-            const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
-            onSnapshot(q, (snapshot) => {
-                posts = [];
-                snapshot.forEach((doc) => {
-                    posts.push({ id: doc.id, ...doc.data() });
-                });
-                renderPosts(posts);
-            }, (error) => {
-                console.error('Ошибка onSnapshot:', error);
-                if (attempts > 0) {
-                    console.log(`Повторная попытка (${attempts} осталось)...`);
-                    setTimeout(() => loadPostsWithRetry(attempts - 1, delay), delay);
-                } else {
-                    console.error('Не удалось подключиться после всех попыток');
-                    alert('Ошибка подключения к Firestore. Проверьте интернет-соединение.');
-                    // Загружаем посты через getDocs в качестве запасного варианта
-                    loadPostsFallback();
+                    if (seconds < 60) {
+                        timeElement.textContent = `${seconds} сек назад`;
+                    } else if (minutes < 60) {
+                        timeElement.textContent = `${minutes} мин назад`;
+                    } else {
+                        timeElement.textContent = `${hours} ч назад`;
+                    }
                 }
             });
         }
 
-        async function loadPostsFallback() {
-            try {
-                posts = [];
-                const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach((doc) => {
-                    posts.push({ id: doc.id, ...doc.data() });
-                });
-                renderPosts(posts);
-            } catch (e) {
-                console.error('Ошибка загрузки постов через getDocs:', e);
-                alert('Не удалось загрузить посты. Попробуйте снова позже.');
-            }
-        }
+        setInterval(updatePostTimes, 1000);
 
-        function renderPosts(postsToRender) {
-            const postsContainer = document.getElementById('postsContainer');
-            postsContainer.innerHTML = '';
-            if (postsToRender.length === 0) {
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const posts = content.querySelectorAll('.post');
+            let hasMatches = false;
+
+            posts.forEach(post => {
+                const title = post.querySelector('.post-title')?.textContent.toLowerCase() || '';
+                const text = post.querySelector('.post-text')?.textContent.toLowerCase() || '';
+                if (title.includes(searchTerm) || text.includes(searchTerm)) {
+                    post.style.display = 'flex';
+                    hasMatches = true;
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+
+            if (searchTerm === '') {
+                posts.forEach(post => post.style.display = 'flex');
+                notFoundCard.classList.remove('active');
+            } else if (!hasMatches) {
                 notFoundCard.classList.add('active');
             } else {
                 notFoundCard.classList.remove('active');
-                postsToRender.forEach(post => {
-                    const postCard = document.createElement('div');
-                    postCard.className = 'post-card';
-                    postCard.innerHTML = `
-                        <div class="post-header">
-                            <img src="${post.avatar}" class="post-avatar" alt="avatar">
-                            <span class="post-username">${post.username}</span>
-                            ${post.verify ? `
-                                <img src="https://img.icons8.com/color/16/instagram-verification-badge.png" class="verify-icon" alt="verify">
-                                <span class="verify-tooltip">Верифицирован</span>
-                            ` : ''}
-                        </div>
-                        ${post.image ? `<img src="${post.image}" class="post-image" alt="post image">` : ''}
-                        <div class="post-title">${post.title}</div>
-                        <div class="post-content">${post.content}</div>
-                        <div class="post-actions">
-                            <div class="action-item">
-                                <img src="https://img.icons8.com/ios-filled/18/heart.png" alt="like">
-                                <span>${post.likes}</span>
-                            </div>
-                            <div class="action-item">
-                                <img src="https://img.icons8.com/ios/18/dislike.png" alt="dislike">
-                                <span>${post.dislikes}</span>
-                            </div>
-                            <div class="action-item">
-                                <img src="https://img.icons8.com/ios/18/comments.png" alt="comment">
-                                <span>${post.comments}</span>
-                            </div>
-                        </div>
-                    `;
-                    postsContainer.appendChild(postCard);
-                });
             }
-        }
+        });
 
         navItems.forEach(item => {
             item.addEventListener('click', () => {
-                if (item.classList.contains('active') || item.id === 'profileTab') return;
-
-                navItems.forEach(nav => nav.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-
+                navItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                const tabId = item.id.replace('Tab', 'ContentTab');
-
-                document.getElementById(tabId).classList.add('active');
-                const mainContent = document.getElementById('mainContent');
-                mainContent.classList.add('fade-out');
-                setTimeout(() => {
-                    mainContent.classList.remove('fade-out');
-                }, 300);
-                searchInput.value = '';
-                notFoundCard.classList.remove('active');
-                renderPosts(posts);
             });
         });
 
-        searchInput.addEventListener('input', () => {
-            const query = searchInput.value.trim().toLowerCase();
-            const filteredPosts = posts.filter(post =>
-                post.title.toLowerCase().includes(query) ||
-                post.content.toLowerCase().includes(query) ||
-                post.username.toLowerCase().includes(query)
-            );
-            renderPosts(filteredPosts);
+        verifiedIcon.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            verifiedIcon.classList.add('show-tooltip');
+            setTimeout(() => {
+                verifiedIcon.classList.remove('show-tooltip');
+            }, 2000);
         });
 
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const query = searchInput.value.trim().toLowerCase();
-                const filteredPosts = posts.filter(post =>
-                    post.title.toLowerCase().includes(query) ||
-                    post.content.toLowerCase().includes(query) ||
-                    post.username.toLowerCase().includes(query)
-                );
-                renderPosts(filteredPosts);
+        verifiedIcon.addEventListener('click', () => {
+            verifiedIcon.classList.toggle('show-tooltip');
+        });
+
+        plusIcon.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+
+        modalClose.addEventListener('click', () => {
+            modal.classList.remove('active');
+            resetModal();
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                resetModal();
             }
         });
 
-        if (verificationIcon && tooltip) {
-            verificationIcon.addEventListener('click', (e) => {
-                e.preventDefault();
-                tooltip.classList.toggle('active');
-                setTimeout(() => {
-                    tooltip.classList.remove('active');
-                }, 2000);
-            });
+        imageUpload.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    imagePreview.src = reader.result;
+                    imageUpload.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        imageUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUpload.style.borderColor = '#1e90ff';
+        });
+
+        imageUpload.addEventListener('dragleave', () => {
+            imageUpload.style.borderColor = '#30363d';
+        });
+
+        imageUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUpload.style.borderColor = '#30363d';
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    imagePreview.src = reader.result;
+                    imageUpload.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        publishButton.addEventListener('click', () => {
+            const title = postTitle.value.trim();
+            const text = postText.value.trim();
+            const image = imagePreview.src;
+
+            if (title || text || (image && imageUpload.classList.contains('has-image'))) {
+                const post = document.createElement('div');
+                post.classList.add('post');
+                post.dataset.createdAt = Date.now();
+
+                const postHeader = document.createElement('div');
+                postHeader.classList.add('post-header');
+
+                const postAvatar = document.createElement('img');
+                postAvatar.classList.add('post-avatar');
+                postAvatar.src = 'https://img.icons8.com/ios/50/ffffff/user.png';
+                postAvatar.alt = 'avatar';
+                postHeader.appendChild(postAvatar);
+
+                const headerInfo = document.createElement('div');
+                const postUsernameElement = document.createElement('div');
+                postUsernameElement.classList.add('post-username');
+                postUsernameElement.textContent = 'Guest';
+                headerInfo.appendChild(postUsernameElement);
+
+                const postTime = document.createElement('div');
+                postTime.classList.add('post-time');
+                postTime.textContent = '0 сек назад';
+                headerInfo.appendChild(postTime);
+
+                postHeader.appendChild(headerInfo);
+                post.appendChild(postHeader);
+
+                if (image && imageUpload.classList.contains('has-image')) {
+                    const postImage = document.createElement('img');
+                    postImage.classList.add('post-image');
+                    postImage.src = image;
+                    postImage.alt = 'post image';
+                    post.appendChild(postImage);
+                }
+
+                if (title) {
+                    const postTitleElement = document.createElement('div');
+                    postTitleElement.classList.add('post-title');
+                    postTitleElement.textContent = title;
+                    post.appendChild(postTitleElement);
+                }
+
+                if (text) {
+                    const postTextElement = document.createElement('div');
+                    postTextElement.classList.add('post-text');
+                    postTextElement.textContent = text;
+                    post.appendChild(postTextElement);
+                }
+
+                const postActions = document.createElement('div');
+                postActions.classList.add('post-actions');
+
+                const likeAction = document.createElement('div');
+                likeAction.classList.add('action-item');
+                const likeIcon = document.createElement('img');
+                likeIcon.src = 'https://img.icons8.com/ios/50/ffffff/like--v1.png';
+                likeIcon.alt = 'like';
+                const likeCount = document.createElement('span');
+                likeCount.textContent = '0';
+                likeAction.appendChild(likeIcon);
+                likeAction.appendChild(likeCount);
+                postActions.appendChild(likeAction);
+
+                const dislikeAction = document.createElement('div');
+                dislikeAction.classList.add('action-item');
+                const dislikeIcon = document.createElement('img');
+                dislikeIcon.src = 'https://img.icons8.com/ios/50/ffffff/dislike--v1.png';
+                dislikeIcon.alt = 'dislike';
+                const dislikeCount = document.createElement('span');
+                dislikeCount.textContent = '0';
+                dislikeAction.appendChild(dislikeIcon);
+                dislikeAction.appendChild(dislikeCount);
+                postActions.appendChild(dislikeAction);
+
+                const commentAction = document.createElement('div');
+                commentAction.classList.add('action-item');
+                const commentIcon = document.createElement('img');
+                commentIcon.src = 'https://img.icons8.com/ios/50/ffffff/comments--v1.png';
+                commentIcon.alt = 'comment';
+                const commentCount = document.createElement('span');
+                commentCount.textContent = '0';
+                commentAction.appendChild(commentIcon);
+                commentAction.appendChild(commentCount);
+                postActions.appendChild(commentAction);
+
+                post.appendChild(postActions);
+
+                likeAction.addEventListener('click', () => {
+                    if (!likeAction.classList.contains('active')) {
+                        likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                        likeAction.classList.add('active');
+                        if (dislikeAction.classList.contains('active')) {
+                            dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
+                            dislikeAction.classList.remove('active');
+                        }
+                    }
+                });
+
+                dislikeAction.addEventListener('click', () => {
+                    if (!dislikeAction.classList.contains('active')) {
+                        dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
+                        dislikeAction.classList.add('active');
+                        if (likeAction.classList.contains('active')) {
+                            likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                            likeAction.classList.remove('active');
+                        }
+                    }
+                });
+
+                commentAction.addEventListener('click', () => {
+                    alert('Комментарии пока не реализованы!');
+                });
+
+                content.insertBefore(post, content.firstChild);
+
+                modal.classList.remove('active');
+                resetModal();
+            } else {
+                alert('Добавьте хотя бы заголовок, текст или изображение!');
+            }
+        });
+
+        function resetModal() {
+            postTitle.value = '';
+            postText.value = '';
+            imageInput.value = '';
+            imageUpload.classList.remove('has-image');
+            imagePreview.src = '';
         }
-
-        document.addEventListener('touchstart', (e) => {
-            if (!e.target.closest('input, button, a, textarea')) {
-                document.activeElement.blur();
-            }
-        });
-
-        document.addEventListener('gesturestart', (e) => e.preventDefault());
-        document.addEventListener('touchmove', (e) => {
-            if (e.scale !== 1) e.preventDefault();
-        }, { passive: false });
     </script>
 </body>
 </html>
