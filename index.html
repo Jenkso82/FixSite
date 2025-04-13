@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FixSite - Соцсеть</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -22,6 +22,7 @@
             overscroll-behavior: none;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
+            overflow-x: hidden;
         }
 
         .container {
@@ -279,17 +280,17 @@
             padding-bottom: 80px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
         .post {
             background: #21262d;
-            padding: 20px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
             animation: slideIn 0.4s ease forwards;
             position: relative;
             border: 0.5px solid #444444;
@@ -304,13 +305,13 @@
         .post-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .post-avatar {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             object-fit: cover;
             background: #161b22;
@@ -318,61 +319,61 @@
         }
 
         .post-username {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: #c9d1d9;
         }
 
         .post-time {
-            font-size: 12px;
+            font-size: 11px;
             color: #8b949e;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         .post-image {
             width: 100%;
-            max-height: 250px;
+            max-height: 200px;
             object-fit: cover;
             background: #161b22;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid #30363d;
         }
 
         .post-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #ffffff;
             line-height: 1.4;
         }
 
         .post-text {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 400;
             color: #c9d1d9;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .post-actions {
             display: flex;
             align-items: center;
-            gap: 20px;
-            padding-top: 12px;
+            gap: 16px;
+            padding-top: 10px;
             border-top: 1px solid #30363d;
         }
 
         .action-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
             color: #8b949e;
-            font-size: 14px;
+            font-size: 13px;
             transition: color 0.2s, transform 0.2s;
         }
 
         .action-item img {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             filter: brightness(0.7);
             transition: filter 0.2s, transform 0.2s;
         }
@@ -676,35 +677,35 @@
             }
 
             .post {
-                padding: 24px;
-                border-radius: 14px;
-            }
-
-            .post-image {
-                max-height: 350px;
+                padding: 20px;
                 border-radius: 12px;
             }
 
+            .post-image {
+                max-height: 300px;
+                border-radius: 10px;
+            }
+
             .post-avatar {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
             }
 
             .post-title {
-                font-size: 20px;
+                font-size: 18px;
             }
 
             .post-text {
-                font-size: 16px;
-            }
-
-            .action-item {
                 font-size: 15px;
             }
 
+            .action-item {
+                font-size: 14px;
+            }
+
             .action-item img {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
             }
 
             .modal-content {
@@ -806,6 +807,7 @@
         const postTitle = document.querySelector('#post-title');
         const postText = document.querySelector('#post-text');
         const content = document.querySelector('#content');
+        const container = document.querySelector('.container');
 
         function updatePostTimes() {
             const posts = content.querySelectorAll('.post');
@@ -889,6 +891,12 @@
             if (e.target === modal) {
                 modal.classList.remove('active');
                 resetModal();
+            }
+        });
+
+        container.addEventListener('click', (e) => {
+            if (e.target === container || e.target === content) {
+                document.activeElement.blur();
             }
         });
 
