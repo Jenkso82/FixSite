@@ -22,8 +22,8 @@
             color: #ffffff;
             overscroll-behavior: none;
             -webkit-overflow-scrolling: touch;
-            touch-action: pan-y;
-            overflow-x: hidden;
+            touch-action: none;
+            overflow: hidden;
             -webkit-text-size-adjust: none;
             text-size-adjust: none;
         }
@@ -37,8 +37,18 @@
             margin: 0 auto;
             padding: 16px;
             background: linear-gradient(180deg, #1e1e2e 0%, #0f0f1a 100%);
-            overflow-y: auto;
             position: relative;
+            touch-action: none;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding-bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            touch-action: pan-y;
         }
 
         .nav-bar {
@@ -293,14 +303,6 @@
 
         .nav-item.active img {
             filter: brightness(1);
-        }
-
-        .content {
-            flex-grow: 1;
-            padding-bottom: 80px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
         }
 
         .post {
@@ -829,6 +831,38 @@
         const content = document.querySelector('#content');
         const container = document.querySelector('.container');
 
+        // Load saved draft from localStorage
+        function loadDraft() {
+            const savedTitle = localStorage.getItem('postTitle');
+            const savedText = localStorage.getItem('postText');
+            const savedImage = localStorage.getItem('postImage');
+
+            if (savedTitle) postTitle.value = savedTitle;
+            if (savedText) postText.value = savedText;
+            if (savedImage) {
+                imagePreview.src = savedImage;
+                imageUpload.classList.add('has-image');
+            }
+        }
+
+        // Save draft to localStorage
+        function saveDraft() {
+            localStorage.setItem('postTitle', postTitle.value);
+            localStorage.setItem('postText', postText.value);
+            if (imageUpload.classList.contains('has-image') && imagePreview.src) {
+                localStorage.setItem('postImage', imagePreview.src);
+            } else {
+                localStorage.removeItem('postImage');
+            }
+        }
+
+        // Initialize draft
+        loadDraft();
+
+        // Save draft on input
+        postTitle.addEventListener('input', saveDraft);
+        postText.addEventListener('input', saveDraft);
+
         function updatePostTimes() {
             const posts = content.querySelectorAll('.post');
             posts.forEach(post => {
@@ -904,13 +938,13 @@
 
         modalClose.addEventListener('click', () => {
             modal.classList.remove('active');
-            resetModal();
+            saveDraft();
         });
 
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.remove('active');
-                resetModal();
+                saveDraft();
                 document.activeElement.blur();
             }
         });
@@ -932,6 +966,7 @@
                 reader.onload = () => {
                     imagePreview.src = reader.result;
                     imageUpload.classList.add('has-image');
+                    saveDraft();
                 };
                 reader.readAsDataURL(file);
             }
@@ -955,6 +990,7 @@
                 reader.onload = () => {
                     imagePreview.src = reader.result;
                     imageUpload.classList.add('has-image');
+                    saveDraft();
                 };
                 reader.readAsDataURL(file);
             }
@@ -1095,6 +1131,9 @@
             imageInput.value = '';
             imageUpload.classList.remove('has-image');
             imagePreview.src = '';
+            localStorage.removeItem('postTitle');
+            localStorage.removeItem('postText');
+            localStorage.removeItem('postImage');
         }
     </script>
 </body>
